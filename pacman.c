@@ -31,12 +31,9 @@ int main(){
         }
     }
 
+    srand(time(NULL));
+
     //start
-    // for(int i=WIDTH/2-2; i<WIDTH/2+3; i++){
-    //     for(int j=WIDTH/2-2; j<WIDTH/2+3; j++){
-    //         level[i][j]=2;
-    //     }
-    // }
     level[WIDTH/2][WIDTH/2]=3;
 
     //paths
@@ -148,7 +145,6 @@ int main(){
         mvprintw(coords[1]+yb-WIDTH/2-1, coords[0]*2+xb-WIDTH-1, "@");
         mvprintw(0,0,"x:%i y:%i",coords[0], coords[1]);
         mvprintw(1,0,"score:%i",score);
-        //mvprintw(coords[1]+1+yb, coords[0]*2+xb, "@@");
         attroff(COLOR_PAIR(1)|A_BOLD);
         usleep(140000);
         if(level[coords[1]][coords[0]]==2){
