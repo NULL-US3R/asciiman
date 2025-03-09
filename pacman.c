@@ -9,7 +9,7 @@
 
 #define WIDTH (LEVELSIZE-2)
 
-#define fract(x,f)((x%f)<0?(x%f+50):(x%f))
+#define fract(x,f)((x%(f))<0?(x%(f)+50):(x%(f)))
 
 int main(){
     initscr();
@@ -156,63 +156,45 @@ int main(){
             score++;
         }
         int key = getch();
-        if(key=='q'){
-            run=0;
+        switch (key) {
+            case 'q': run=0; break;
+            case 'w': v=1; break;
+            case 's': v=2; break;
+            case 'a': v=3; break;
+            case 'd': v=4; break;
         }
-        if(key=='w' && v!=1){
-            v=1;
+        switch (v){
+            case 1:
+                if(level[coords[1]-1][coords[0]]==1){
+                    v=0;
+                }else{
+                    coords[1]--;
+                }
+            break;
+            case 2:
+                if(level[coords[1]+1][coords[0]]==1){
+                    v=0;
+                }else{
+                    coords[1]++;
+                }
+            break;
+            case 3:
+                if(level[coords[1]][coords[0]-1]==1){
+                    v=0;
+                }else{
+                    coords[0]--;
+                }
+            break;
+            case 4:
+                if(level[coords[1]][coords[0]+1]==1){
+                    v=0;
+                }else{
+                    coords[0]++;
+                }
+            break;
         }
-        if(key=='s' && v!=2){
-            v=2;
-        }
-        if(key=='a' && v!=3){
-            v=3;
-        }
-        if(key=='d' && v!=4){
-            v=4;
-        }
-
-        if(v==1){
-            if(level[coords[1]-1][coords[0]]==1){
-                v=0;
-            }else{
-                coords[1]--;
-            }
-        }
-        if(v==2){
-            if(level[coords[1]+1][coords[0]]==1){
-                v=0;
-            }else{
-                coords[1]++;
-            }
-        }
-        if(v==3){
-            if(level[coords[1]][coords[0]-1]==1){
-                v=0;
-            }else{
-                coords[0]--;
-            }
-        }
-        if(v==4){
-            if(level[coords[1]][coords[0]+1]==1){
-                v=0;
-            }else{
-                coords[0]++;
-            }
-        }
-
-        if(coords[0]>WIDTH){
-            coords[0]=1;
-        }
-        if(coords[0]<=0){
-            coords[0]=WIDTH;
-        }
-        if(coords[1]>WIDTH){
-            coords[1]=1;
-        }
-        if(coords[1]<=0){
-            coords[1]=WIDTH;
-        }
+        coords[0] = fract(coords[0], WIDTH+1);
+        coords[1] = fract(coords[1], WIDTH+1);
     }
     endwin();
 }
