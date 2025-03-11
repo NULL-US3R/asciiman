@@ -25,99 +25,12 @@ int main(){
     xb/=4;yb/=2;
     int coords[2] = {WIDTH/2,WIDTH/2}, run = 1, v = 0;
     int level[WIDTH+2][WIDTH+2];
-    for(int i=0; i<WIDTH+2; i++){
-        for(int j=0; j<WIDTH+2; j++){
-            level[i][j]=1;
-        }
-    }
+    char name[] = "./levels/1.lev";
+    FILE * f = fopen(name, "r+");
+    fread(level, sizeof(int), (WIDTH+2)*(WIDTH+2), f);
+    fclose(f);
 
-    srand(time(NULL));
-
-    //start
-    level[WIDTH/2][WIDTH/2]=3;
-
-    //paths
-    #define MAXLEN (WIDTH/2);
-    for(int iter=0; iter<WIDTH*5; iter++){
-        for(int i=0; i<WIDTH+2; i++){
-            for(int j=0; j<WIDTH+2; j++){
-                if(level[i][j]==3){
-                    int direction = random()%4, length = random()%MAXLEN;
-                    switch (direction) {
-                        case 0:
-                            for(int l=0; l<=length && (j+l)<WIDTH+2; l++){
-                                level[i][j+l]=0;
-                                if(l==length || (j+l)==WIDTH+1){
-                                    level[i][j+l]=3;
-                                }
-                            }
-                        break;
-                        case 1:
-                            for(int l=0; l<=length && (j-l)>0; l++){
-                                level[i][j-l]=0;
-                                if(l==length || (j-l)==1){
-                                    level[i][j-l]=3;
-                                }
-                            }
-                        break;
-                        case 2:
-                            for(int l=0; l<=length && (i+l)<WIDTH+2; l++){
-                                level[i+l][j]=0;
-                                if(l==length || (i+l)==WIDTH+1){
-                                    level[i+l][j]=3;
-                                }
-                            }
-                        break;
-                        case 3:
-                            for(int l=0; l<=length && (i-l)>0; l++){
-                                level[i-l][j]=0;
-                                if(l==length || (i-l)==1){
-                                    level[i-l][j]=3;
-                                }
-                            }
-                        break;
-                    }
-                }
-            }
-        }
-    }
-    for(int i=0; i<WIDTH+2; i++){
-        for(int j=0; j<WIDTH+2; j++){
-            if(level[i][j]==3){
-                level[i][j]=0;
-            }
-        }
-    }
-
-    //points
-    #define POINTS 600
-    #define NUMPOINTS (POINTS+1)
-    int count=0;
-    while(count!=NUMPOINTS){
-        for(int i=0; i<WIDTH+2; i++){
-            for(int j=0; j<WIDTH+2; j++){
-                if(level[i][j]==0){
-                    if(random()%WIDTH<2){
-                        if(count<NUMPOINTS){
-                            level[i][j]=2;
-                            count++;
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    //border
-    for(int i=0; i<WIDTH+2; i++){
-        for(int j=0; j<WIDTH+2; j++){
-            if(i==0 || j==0 || i==WIDTH+1 || j==WIDTH+1){
-                level[i][j]=1;
-            }
-        }
-    }
-
-    #define FOGDIST 13
+    #define FOGDIST 1300
     int score=0;
     while(run){
         getmaxyx(stdscr, yb, xb);
