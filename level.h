@@ -103,4 +103,11 @@ void generate_level(level_t *level);
  */
 void generate_paths(level_t *level);
 
+/**
+ * @brief Генерирует очки на уровне.
+ *
+ * @param level Указатель на структуру уровня.
+ */
+void generate_points(level_t *level);
+
 #endif // LEVEL_H
