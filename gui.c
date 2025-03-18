@@ -353,7 +353,7 @@ void init_pacman(pacman_t *pacman, level_t *level) {
   pacman->fog_radius = 20;
 }
 
-void move_pacman(pacman_t *pacman, level_t *level, FILE *f) {
+void move_pacman(pacman_t *pacman, level_t *level) {
   int32_t new_x = pacman->x + move_dx[pacman->move_direction];
   int32_t new_y = pacman->y + move_dy[pacman->move_direction];
   if (new_x >= 0 && new_x < level->width && new_y >= 0 &&
@@ -368,7 +368,6 @@ void move_pacman(pacman_t *pacman, level_t *level, FILE *f) {
     level->level_arr[pacman->y][pacman->x] = object_chars[PATH];
     pacman->score++;
   }
-  log_movement(f, pacman);
 }
 
 void draw_game(WINDOW *gamemap, WINDOW *sidebar, level_t *level,
@@ -379,7 +378,6 @@ void draw_game(WINDOW *gamemap, WINDOW *sidebar, level_t *level,
   mvwprintw(sidebar, 2, 0, "%s", seed);
 
   while (1) {
-
     wrefresh(gamemap);
     wrefresh(sidebar);
     level_copy(&level_fogged, level);
@@ -405,19 +403,23 @@ void draw_game(WINDOW *gamemap, WINDOW *sidebar, level_t *level,
       break;
     case 'w':
       pacman->move_direction = UP;
+      log_movement(f, pacman);
       break;
     case 's':
       pacman->move_direction = DOWN;
+      log_movement(f, pacman);
       break;
     case 'a':
       pacman->move_direction = LEFT;
+      log_movement(f, pacman);
       break;
     case 'd':
       pacman->move_direction = RIGHT;
+      log_movement(f, pacman);
       break;
     }
 
-    move_pacman(pacman, &level_fogged, f);
+    move_pacman(pacman, &level_fogged);
 
     mvwprintw(sidebar, 0, 0, "x: %0d y: %0d", pacman->x, pacman->y);
     mvwprintw(sidebar, 1, 0, "score: %d", pacman->score);
