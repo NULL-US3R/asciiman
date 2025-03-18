@@ -1,11 +1,5 @@
 #include "level.h"
-#include <stddef.h>
-#include <stdint.h>
-#include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
-#include <time.h>
-
 
 int get_seed(level_t* level, char* buffer, size_t buffer_size){
     if(buffer_size < SEED_BUFFER_SIZE){
@@ -24,7 +18,7 @@ int get_seed(level_t* level, char* buffer, size_t buffer_size){
 }
 
 
-int read_from_string(const char* buffer, level_t* level){
+int read_from_string(level_t* level, const char* buffer){
     if(!buffer || !level){
         return -1;
     }
@@ -89,6 +83,12 @@ void init_level(level_t* level, uint16_t height, uint16_t width,
     alloc_level(level);
 }
 
+void init_level_seeded(level_t* level, char* seed){
+  read_from_string(level, seed);
+  level->level_arr = NULL;
+  alloc_level(level);
+}
+
 void generate_level(level_t* level){
     char** arr = level->level_arr;
     srand(level->random);
@@ -99,7 +99,7 @@ void generate_level(level_t* level){
     }
     arr[level->height/2][level->width/2] = object_chars[NOT_GENERATED];
     generate_paths(level);
-    //generate_points(level);
+    generate_points(level);
 }
 
 void generate_paths(level_t *level) {
@@ -116,7 +116,6 @@ void generate_paths(level_t *level) {
           int limit_j = (dj[direction] == 0)
                             ? j
                             : (dj[direction] == 1 ? j + length : j - length);
-
           if (limit_i >= level->height) {
             limit_i = level->height - 1;
           }
@@ -130,7 +129,7 @@ void generate_paths(level_t *level) {
             limit_j = 0;
           }
 
-          // Set the path to 0
+          //Set the path to 0
           for (int l = 0; l <= length; l++) {
             int ni = i + di[direction] * l;
             int nj = j + dj[direction] * l;
@@ -154,6 +153,16 @@ void generate_paths(level_t *level) {
   }
 }
 
+// void print_level(level_t *level) {
+//   for (int i = 0; i < level->height; i++) {
+//     for (int j = 0; j < level->width; j++) {
+//       printf("%c", level->level_arr[i][j]);
+//     }
+//     printf("\n");
+//   }
+//   printf("\n\n");
+// }
+
 void generate_points(level_t* level){
     for(int count = 0; count < level->points;){
         int i = rand() % level->height;
@@ -165,15 +174,21 @@ void generate_points(level_t* level){
     }
 }
 
-int main(){
-    level_t level;
-    init_level(&level, 58, 58, 100, 10, 100);
-    generate_level(&level);
-    for(int i = 0; i < level.height; i++){
-        for(int j = 0; j < level.width; j++){
-            printf("%c", level.level_arr[i][j]);
-        }
-        printf("\n");
+void level_copy(level_t* dst, level_t* src){
+    init_level(dst, src->height, src->width, src->paths, src->max_path_length,
+               src->points);
+    dst->random = src->random;
+    memcpy(dst->level_arr, src->level_arr, sizeof(char*) * src->height);
+    for(int i = 0; i < src->height; i++){
+        memcpy(dst->level_arr[i], src->level_arr[i], sizeof(char) * src-> height);
     }
-    free_level(&level);
 }
+
+// int main(){
+//     level_t level;
+//     init_level(&level, 58, 58, 100, 10, 100);
+//     // level.random = 69;
+//     generate_level(&level);
+//     // print_level(&level);
+//     free_level(&level);
+// }

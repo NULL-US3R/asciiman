@@ -8,12 +8,17 @@
 
 #include <stddef.h>
 #include <stdint.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <time.h>
 
 /** @brief Типы объектов в уровне. */
 typedef enum {
     PATH,
     BORDER,
     FOOD,
+    FOG,
     NOT_GENERATED
 } object_type_t;
 
@@ -22,7 +27,8 @@ static const char object_chars[] = {
     [PATH]          = ' ',
     [BORDER]        = '#',
     [FOOD]          = '.',
-    [NOT_GENERATED] = ' '
+    [FOG]           = '/',
+    [NOT_GENERATED] = '0'
 };
 
 /** @brief Структура, содержащая параметры уровня. */
@@ -59,7 +65,7 @@ int get_seed(level_t* level, char* buffer, size_t buffer_size);
  * @param level Указатель на структуру уровня.
  * @return 0 при успешном выполнении, -1 при ошибке аргументов, -2 при неверной длине, -3 при ошибке чтения.
  */
-int read_from_string(const char* buffer, level_t* level);
+int read_from_string(level_t *level, const char *buffer);
 
 /**
  * @brief Выделяет память для массива уровня.
@@ -90,6 +96,14 @@ void init_level(level_t *level, uint16_t height, uint16_t width, uint16_t paths,
                 uint16_t max_path_length, uint16_t points);
 
 /**
+ * @brief Инициализирует уровень с заданным сидом.
+ *
+ * @param level Указатель на структуру уровня.
+ * @param seed Строка, содержащая сид.
+ */
+void init_level_seeded(level_t* level, char* seed);
+
+/**
  * @brief Генерирует уровень.
  *
  * @param level Указатель на структуру уровня.
@@ -109,5 +123,13 @@ void generate_paths(level_t *level);
  * @param level Указатель на структуру уровня.
  */
 void generate_points(level_t *level);
+
+/**
+ * @brief Копирует содержимое уровня src в уровень dst.
+ *
+ * @param dst Указатель на структуру уровня dst.
+ * @param src Указатель на структуру уровня src.
+ */
+void level_copy(level_t *dst, level_t *src);
 
 #endif // LEVEL_H
