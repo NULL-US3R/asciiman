@@ -11,7 +11,22 @@
 
 #define fract(x,f)((x%(f))<0?(x%(f)+50):(x%(f)))
 
-int main(){
+FILE *log_init(uint seed){
+  time_t t = time(NULL);
+  char filename[23];
+  struct tm *tp = localtime(&t);
+  strftime(filename, sizeof(filename), "%d_%m_%Y-%H:%M:%S.log", tp);
+  FILE *file = fopen(filename, "w+");
+  fprintf(file, "%s\n", asctime(tp));
+  fprintf(file, "seed: %d\n", seed);
+  return file;
+}
+
+void log_movement(FILE *file, int x, int y, int score, int mv) {
+  fprintf(file, "x: %d y: %d score: %d move_direction: %d\n", x, y, score, mv);
+}
+
+int main(int argc, char * argv[]){
     initscr();
     cbreak();
     noecho();
@@ -25,10 +40,14 @@ int main(){
     xb/=4;yb/=2;
     int coords[2] = {WIDTH/2,WIDTH/2}, run = 1, v = 0;
     int level[WIDTH+2][WIDTH+2];
-    char name[] = "./levels/1.lev";
+    char * name = argv[1];
     FILE * f = fopen(name, "r+");
     fread(level, sizeof(int), (WIDTH+2)*(WIDTH+2), f);
+    uint seed;
+    fseek(f, (WIDTH+2)*(WIDTH+2), SEEK_SET);
+    fread(&seed, sizeof(uint), 1, f);
     fclose(f);
+    FILE * logf = log_init(seed);
 
     #define FOGDIST 1300
     int score=0;
@@ -104,6 +123,7 @@ int main(){
         }
         coords[0] = fract(coords[0], WIDTH+1);
         coords[1] = fract(coords[1], WIDTH+1);
+        log_movement(logf, coords[0], coords[1], score, v);
     }
     endwin();
 }

@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 #include <unistd.h>
 #include <time.h>
 
@@ -105,11 +106,19 @@ void genlevel(char * name, uint seed){
     }
     FILE * f = fopen(name, "w+");
     fwrite(level, sizeof(int), (WIDTH+2)*(WIDTH+2), f);
+    fseek(f, (WIDTH+2)*(WIDTH+2), SEEK_SET);
+    fwrite(&seed, sizeof(uint), 1, f);
     fclose(f);
 }
 
-int main(){
-    char name[] = "./levels/1.lev";
-    genlevel(name, time(NULL));
+int main(int argc, char * argv[]){
+    char name[10000], nm[100];
+    int l = strlen(argv[2]);
+    memcpy(name, argv[2], l);
+    for(int i=1; i<=atoi(argv[1]); i++){
+        sprintf(nm, "%d.lev", i);
+        memcpy(name+l, nm, 100);
+        genlevel(name, time(NULL)+i);
+    }
     return 0;
 }
